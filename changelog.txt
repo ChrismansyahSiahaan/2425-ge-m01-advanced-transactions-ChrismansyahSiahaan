@@ -1,0 +1,67 @@
+package fintech.model;
+
+import java.util.ArrayList;
+import java.util.List;
+
+class NegativeBalanceException extends Exception {
+    public NegativeBalanceException(String message) {
+        super(message);
+    }
+}
+
+class Transaction {
+    private static int counter = 1;
+    private int id;
+    private String accountId;
+    private double amount;
+    private String timestamp;
+    private String description;
+
+    public Transaction(String accountId, double amount, String timestamp, String description) {
+        this.id = counter++;
+        this.accountId = accountId;
+        this.amount = amount;
+        this.timestamp = timestamp;
+        this.description = description;
+    }
+
+    public int getId() { return id; }
+    public double getAmount() { return amount; }
+    public String toString() {
+        return id + "|" + accountId + "|" + amount + "|" + timestamp + "|" + description;
+    }
+}
+
+class Account {
+    private String id;
+    private String name;
+    private double balance;
+    private List<Transaction> transactions;
+
+    public Account(String name, String id) {
+        this.name = name;
+        this.id = id;
+        this.balance = 0.0;
+        this.transactions = new ArrayList<>();
+    }
+
+    public String getId() { return id; }
+    public String getName() { return name; }
+    public double getBalance() { return balance; }
+    
+    public void addTransaction(double amount, String timestamp, String description) throws NegativeBalanceException {
+        if (balance + amount < 0) {
+            throw new NegativeBalanceException("Transaction declined: Insufficient funds for account " + id);
+        }
+        Transaction transaction = new Transaction(id, amount, timestamp, description);
+        transactions.add(transaction);
+        balance += amount;
+    }
+
+    public void showAccount() {
+        System.out.println(id + "|" + name + "|" + balance);
+        for (Transaction t : transactions) {
+            System.out.println(t);
+        }
+    }
+}
