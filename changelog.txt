@@ -1,67 +1,105 @@
-package fintech.model;
+Test 1: m01-01-01
+Input:
 
-import java.util.ArrayList;
-import java.util.List;
+create-account#Wiro Sableng#wirsab
+create-account#Jaka Sembung#jaksem
+create-transaction#jaksem#15.0#2023/02/14 14:14:14#Weekly income
+create-transaction#jaksem#-8.4#2023/02/15 15:18:15#SIM credit
+create-transaction#jaksem#37.1#2023/02/15 15:15:15#Book refund
+create-transaction#wirsab#-5.0#2023/02/16 10:15:41#Tax
+show-account#jaksem
+show-account#wirsab
+---
 
-class NegativeBalanceException extends Exception {
-    public NegativeBalanceException(String message) {
-        super(message);
-    }
-}
+output
+wirsab|Wiro Sableng|0.0
+jaksem|Jaka Sembung|0.0
+jaksem|Jaka Sembung|43.7
+1|jaksem|15.0|2023/02/14 14:14:14|Weekly income
+3|jaksem|37.1|2023/02/15 15:15:15|Book refund
+2|jaksem|-8.4|2023/02/15 15:18:15|SIM credit
+wirsab|Wiro Sableng|0.0
 
-class Transaction {
-    private static int counter = 1;
-    private int id;
-    private String accountId;
-    private double amount;
-    private String timestamp;
-    private String description;
 
-    public Transaction(String accountId, double amount, String timestamp, String description) {
-        this.id = counter++;
-        this.accountId = accountId;
-        this.amount = amount;
-        this.timestamp = timestamp;
-        this.description = description;
-    }
+Test 2: m01-01-02
+Input:
 
-    public int getId() { return id; }
-    public double getAmount() { return amount; }
-    public String toString() {
-        return id + "|" + accountId + "|" + amount + "|" + timestamp + "|" + description;
-    }
-}
+create-account#Wiro Sableng#wirsab
+create-account#Jaka Sembung#jaksem
+create-transaction#jaksem#-8.4#2023/02/15 15:18:15#SIM credit
+create-transaction#jaksem#37.1#2023/02/15 15:15:15#Book refund
+create-transaction#wirsab#-5.0#2023/02/16 10:15:41#Tax
+create-account#Milkyman#milkyn
+create-transaction#jaksem#15.0#2023/02/14 14:14:14#Weekly income
+create-transaction#milkyn#100.00#2023/03/11 08:00:40#Research grant (March)
+create-transaction#milkyn#8.56#2023/03/11 08:00:20#Assistancy paycheck
+show-accounts
+---
 
-class Account {
-    private String id;
-    private String name;
-    private double balance;
-    private List<Transaction> transactions;
+output
+wirsab|Wiro Sableng|0.0
+jaksem|Jaka Sembung|0.0
+milkyn|Milkyman|0.0
+jaksem|Jaka Sembung|52.1
+2|jaksem|15.0|2023/02/14 14:14:14|Weekly income
+1|jaksem|37.1|2023/02/15 15:15:15|Book refund
+milkyn|Milkyman|108.56
+4|milkyn|8.56|2023/03/11 08:00:20|Assistancy paycheck
+3|milkyn|100.0|2023/03/11 08:00:40|Research grant (March)
+wirsab|Wiro Sableng|0.0
 
-    public Account(String name, String id) {
-        this.name = name;
-        this.id = id;
-        this.balance = 0.0;
-        this.transactions = new ArrayList<>();
-    }
 
-    public String getId() { return id; }
-    public String getName() { return name; }
-    public double getBalance() { return balance; }
-    
-    public void addTransaction(double amount, String timestamp, String description) throws NegativeBalanceException {
-        if (balance + amount < 0) {
-            throw new NegativeBalanceException("Transaction declined: Insufficient funds for account " + id);
-        }
-        Transaction transaction = new Transaction(id, amount, timestamp, description);
-        transactions.add(transaction);
-        balance += amount;
-    }
+Test 3: m01-01-03
+Input:
 
-    public void showAccount() {
-        System.out.println(id + "|" + name + "|" + balance);
-        for (Transaction t : transactions) {
-            System.out.println(t);
-        }
-    }
-}
+create-account#Wiro Sableng#wirsab
+create-account#Jaka Sembung#jaksem
+create-transaction#jaksem#-8.4#2023/02/15 15:18:15#SIM credit
+create-transaction#jaksem#37.1#2023/02/15 15:15:15#Book refund
+create-transaction#wirsab#-5.0#2023/02/16 10:15:41#Tax
+create-account#Milkyman#milkyn
+create-transaction#jaksem#15.0#2023/02/14 14:14:14#Weekly income
+create-transaction#milkyn#100.00#2023/03/11 08:00:40#Research grant (March)
+create-transaction#milkyn#8.56#2023/03/11 08:00:20#Assistancy paycheck
+remove-account#jaksem
+show-accounts
+---
+
+output
+wirsab|Wiro Sableng|0.0
+jaksem|Jaka Sembung|0.0
+milkyn|Milkyman|0.0
+milkyn|Milkyman|108.56
+4|milkyn|8.56|2023/03/11 08:00:20|Assistancy paycheck
+3|milkyn|100.0|2023/03/11 08:00:40|Research grant (March)
+wirsab|Wiro Sableng|0.0
+
+
+Test 4: m01-01-04
+Input:
+
+create-account#Wiro Sableng#wirsab
+create-account#Milkyman#milkyn
+create-account#Jaka Sembung#jaksem
+create-transaction#jaksem#37.1#2023/02/15 15:15:15#Book refund
+create-transaction#wirsab#-5.0#2023/02/16 10:15:41#Tax
+create-transaction#jaksem#-8.4#2023/02/15 15:12:15#SIM credit
+remove-account#wirsab
+create-transaction#milkyn#100.00#2023/03/11 08:00:40#Research grant (March)
+create-transaction#jaksem#15.0#2023/02/14 14:14:14#Weekly income
+create-transaction#milkyn#8.56#2023/03/11 08:00:20#Assistancy paycheck
+show-accounts
+---
+
+Output:
+
+wirsab|Wiro Sableng|0.0
+milkyn|Milkyman|0.0
+jaksem|Jaka Sembung|0.0
+jaksem|Jaka Sembung|43.7
+4|jaksem|15.0|2023/02/14 14:14:14|Weekly income
+2|jaksem|-8.4|2023/02/15 15:12:15|SIM credit
+1|jaksem|37.1|2023/02/15 15:15:15|Book refund
+milkyn|Milkyman|108.56
+5|milkyn|8.56|2023/03/11 08:00:20|Assistancy paycheck
+3|milkyn|100.0|2023/03/11 08:00:40|Research grant (March)
